@@ -52,11 +52,11 @@ impl Server {
             let rsp_tag = data.get_u64();
             let req_len = data.get_u32() as usize;
             let req_bytes = data.split_to(req_len);
-            let req: Echo = bincode::deserialize(&req_bytes).unwrap();
+            let req: Echo = postcard::from_bytes(&req_bytes).unwrap();
             let rsp = Echo(req.0);
             let ep = ep.clone();
             task::spawn(async move {
-                let rsp = bincode::serialize(&rsp).unwrap();
+                let rsp = postcard::to_allocvec(&rsp).unwrap();
                 let rsp_len_buf = (rsp.len() as u32).to_be_bytes();
                 let mut iov = [
                     IoSlice::new(&rsp_len_buf[..]),

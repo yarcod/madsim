@@ -15,16 +15,18 @@ categories = ["asynchronous", "simulation"]
 [features]
 default = ["macros", "rpc"]
 ucx = ["async-ucx"]
-rpc = ["bincode"]
+rpc = ["postcard"]
 macros = ["madsim-macros", "tokio/macros"]
 # erpc = ["rpc"] # "mad_rpc"
 
 [dependencies]
-bincode = { version = "1", optional = true }
 bytes = "1"
 futures-util = "0.3"
 lazy_static = "1.4"
 madsim-macros = { version = "0.2", path = "../madsim-macros", optional = true }
+# default-features = false keeps postcard's embedded heapless stack (and the
+# unmaintained atomic-polyfill behind it) out of the graph.
+postcard = { version = "1.1", default-features = false, features = ["use-std"], optional = true }
 rand = "0.8"
 serde = { version = "1", features = ["derive"] }
 spin = "0.9.8"

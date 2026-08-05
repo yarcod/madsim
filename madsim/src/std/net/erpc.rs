@@ -105,7 +105,7 @@ impl MsgHeader {
         let mut len = 0;
         len += buf.write(&self.tag.to_be_bytes()).unwrap();
         len += buf.write(&self.data_len.to_be_bytes()).unwrap();
-        let from_bytes = bincode::serialize(&self.from).unwrap();
+        let from_bytes = postcard::to_allocvec(&self.from).unwrap();
         let from_len = from_bytes.len() as u32;
         len += buf.write(&from_len.to_be_bytes()).unwrap();
         len += buf.write(&from_bytes).unwrap();
@@ -117,7 +117,7 @@ impl MsgHeader {
         let tag = data.get_u64();
         let data_len = data.get_u32();
         let from_len = data.get_u32() as usize;
-        let from = bincode::deserialize(&data[..from_len]).unwrap();
+        let from = postcard::from_bytes(&data[..from_len]).unwrap();
         (MsgHeader::new(tag, data_len, from), 16 + from_len)
     }
 }
